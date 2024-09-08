@@ -32,7 +32,25 @@ export async function POST(request: Request) {
         const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
         if (existingUserByEmail) {
-            true;
+            if(existingUserByEmail.isVerified){
+                return Response.json(
+                    {
+                        success: false,
+                        message: "User already exists",
+                        email, 
+                        status: 400
+                    }
+                )
+            }
+            else{
+                const hashedPassword = await bcrypt.hash(passsword, 10);
+                existingUserByEmail.password = hashedPassword;
+                existingUserByEmail.verifyCode = verifyCode;
+                existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000);
+                await existingUserByEmail.save();
+
+            }
+            
             // todo back here            
         }
         else {
@@ -41,7 +59,7 @@ export async function POST(request: Request) {
             const expiryDate = new Date();
             expiryDate.setHours(expiryDate.getHours() + 1);
         
-            new UserModel({
+           const newUser = new UserModel({
                 username,
                 email,
                 password: hashedPassword,
@@ -51,9 +69,27 @@ export async function POST(request: Request) {
                 isAccepting: true,
                 messages: []
             })
-
+            await newUser.save();
         }
 
+        // send verification email
+        const emailResponse = await sendVerificationEmail(email, username, verifyCode);
+
+        if(!emailResponse.success){
+            return Response.json(
+                {
+                    success: false,
+                    message: "Error sending verification email",
+                    
+                }, {status: 500}
+            )
+        }
+        return Response.json(
+            {
+                success: true,
+                message: "User registered successfully",
+            }
+        )
       
 
     } catch (error) {
