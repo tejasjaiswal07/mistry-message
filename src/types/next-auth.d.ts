@@ -18,4 +18,16 @@ declare module "next-auth" {
         isAcceptingMessages?: boolean;
         }& DefaultSession["user"];
 }
+
+
+interface Token {
+    _id?: string;
+    isVerified?: boolean;
+    username?: string;
+    isAcceptingMessages?: boolean;
+}
+
+
+
+
 }
