@@ -19,7 +19,7 @@ const MessageSchema: Schema<Message> = new Schema({
     verifyCode: string;
     verifyCodeExpiry: Date
     isVerified: boolean;
-    isAccepting: boolean;
+    isAcceptingMessage: boolean;
     messages: Message[]
 
    }
@@ -31,7 +31,7 @@ const MessageSchema: Schema<Message> = new Schema({
     verifyCode: {type: String, required: [true, "verifycode is required"]},
     verifyCodeExpiry: {type: Date, required: [true, "verifycode expiry is required"]},
     isVerified: {type: Boolean, default: false},
-    isAccepting: {type: Boolean, default: true},
+    isAcceptingMessage: {type: Boolean, default: true},
     messages: [MessageSchema]
   })
 
